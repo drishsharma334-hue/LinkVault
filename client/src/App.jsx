@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 
+const API_URL = 'https://linkvault-backend-8qc8.onrender.com'
+
 function App() {
   const [url, setUrl] = useState('')
   const [shortUrl, setShortUrl] = useState('')
@@ -10,11 +12,17 @@ function App() {
 
   async function loadHistory() {
     try {
-      const response = await 'fetch('https://linkvault-backend-8qc8.onrender.com/api/links')')
+      const response = await fetch(`${API_URL}/api/links`)
+
+      if (!response.ok) {
+        throw new Error(`History request failed: ${response.status}`)
+      }
+
       const data = await response.json()
       setHistory(data)
     } catch (err) {
       console.error('Could not load link history:', err)
+      setError(`History error: ${err.message}`)
     }
   }
 
@@ -26,7 +34,9 @@ function App() {
     setError('')
     setShortUrl('')
 
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    const originalUrl = url.trim()
+
+    if (!/^https?:\/\/.+/i.test(originalUrl)) {
       setError('Enter a URL starting with http:// or https://')
       return
     }
@@ -34,24 +44,25 @@ function App() {
     setLoading(true)
 
     try {
-      const response = await fetch('https://linkvault-backend-8qc8.onrender.com/api/shorten', {
+      const response = await fetch(`${API_URL}/api/shorten`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ originalUrl: url }),
+        body: JSON.stringify({ originalUrl }),
       })
 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'Could not shorten this URL')
+        throw new Error(data.error || `Request failed: ${response.status}`)
       }
 
       setShortUrl(data.shortUrl)
       await loadHistory()
     } catch (err) {
-      setError('Could not connect to LinkVault. Check that your backend is running.')
+      console.error('URL shortening failed:', err)
+      setError(`Could not shorten URL: ${err.message}`)
     } finally {
       setLoading(false)
     }
@@ -83,7 +94,7 @@ function App() {
         </div>
       )}
 
-      {error && <p>{error}</p>}
+      {error && <p role="alert">{error}</p>}
 
       <h2>Link History</h2>
 
