@@ -39,7 +39,7 @@ app.post('/api/shorten', (req, res) => {
 
   res.status(201).json({
     shortCode: code,
-    shortUrl: `http://localhost:${PORT}/${code}`,
+    shortUrl: `https://linkvault-backend-8qc8.onrender.com/${code}`,
     originalUrl,
     clicks: 0
   });
@@ -68,7 +68,7 @@ app.get('/api/links', (req, res) => {
   for (const [code, link] of links.entries()) {
     allLinks.push({
       shortCode: code,
-      shortUrl: `http://localhost:${PORT}/${code}`,
+      shortUrl: `https://linkvault-backend-8qc8.onrender.com/${code}`,
       originalUrl: link.originalUrl,
       clicks: link.clicks
     });

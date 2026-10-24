@@ -10,7 +10,7 @@ function App() {
 
   async function loadHistory() {
     try {
-      const response = await fetch('http://localhost:5000/api/links')
+      const response = await 'fetch('https://linkvault-backend-8qc8.onrender.com/api/links')')
       const data = await response.json()
       setHistory(data)
     } catch (err) {
@@ -34,7 +34,7 @@ function App() {
     setLoading(true)
 
     try {
-      const response = await fetch('http://localhost:5000/api/shorten', {
+      const response = await fetch('https://linkvault-backend-8qc8.onrender.com/api/shorten', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
